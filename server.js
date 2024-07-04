@@ -30,6 +30,20 @@ app.get('/home', (req, res)=>{
     res.json(datas);
 });
 
+app.get('/', (req, res)=>{
+  let datas = [
+    {
+    "name":"difo",
+    "gender":"male"
+    }
+    ,{
+    "name":"difo",
+    "gender":"male"
+    }
+  ];
+    res.json(datas);
+});
+
 // Start the server
 app.listen(3000, () => {
   console.log('Server started on port 3000');
