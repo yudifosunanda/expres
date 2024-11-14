@@ -95,7 +95,7 @@ app.get('/', (req, res)=>{
 });
 
   app.get('/users', getUser);
-  app.post('/user/add',csrfProtection, upload.single('profilePic'), addUserValidationRules(), validate, addUser);
+  app.post('/user/add', upload.single('profilePic'), addUserValidationRules(), validate, addUser);
   app.put('/user/update/:id', updateUser);
   app.delete('/user/delete/:id', deleteUser);
 

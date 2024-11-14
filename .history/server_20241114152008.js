@@ -2,9 +2,9 @@
 const express = require('express');
 const db = require('./db');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-var csrf = require('csurf');
 const cors = require('cors');
+const csrf = require('csurf');
+const cookieParser = require('cookie-parser'); // Add cookie parser
 // user model
 const { getUser, addUser, updateUser, deleteUser } = require('./rest/user');
 //validator
@@ -14,16 +14,21 @@ const { validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 
+// Initialize the CSRF middleware
+const csrfProtection = csrf({ cookie: true });
+
 // Initialize Express app
 const app = express();
 
 // Configure middleware
+app.use(cookieParser()); // Parse cookies before csrf
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
-app.use(cookieParser('secretKey'));
-var csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+app.use(cors({
+  origin: 'http://your-client-url.com', // Replace with your frontend URL
+  credentials: true // Allow cookies
+}));
+app.use(csrfProtection); // Apply csrf protection to all routes
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -44,7 +49,6 @@ const upload = multer({
     const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
 
     return cb(null, true);
-   
   }
 });
 
@@ -60,45 +64,45 @@ const validate = (req, res, next) => {
   });
 };
 
-// Define a route to fetch data from the user table
 // Route to provide CSRF token to the client
 app.get('/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-app.get('/home', (req, res)=>{
+// Define routes
+app.get('/home', (req, res) => {
   let datas = [
     {
-      "name":"difo",
-      "gender":"male"
-    }
-    ,{
-      "name":"difo",
-      "gender":"male"
+      "name": "difo",
+      "gender": "male"
+    },
+    {
+      "name": "difo",
+      "gender": "male"
     }
   ];
   res.json(datas);
 });
 
-app.get('/', (req, res)=>{
+app.get('/', (req, res) => {
   let datas = [
     {
-      "name":"difo",
-      "gender":"male"
-    }
-    ,{
-      "name":"difo",
-      "gender":"male"
+      "name": "difo",
+      "gender": "male"
+    },
+    {
+      "name": "difo",
+      "gender": "male"
     }
   ];
   res.json(datas);
 });
 
-  app.get('/users', getUser);
-  app.post('/user/add',csrfProtection, upload.single('profilePic'), addUserValidationRules(), validate, addUser);
-  app.put('/user/update/:id', updateUser);
-  app.delete('/user/delete/:id', deleteUser);
-
+// Protected routes that require CSRF tokens
+app.get('/users', getUser);
+app.post('/user/add', csrfProtection, upload.single('profilePic'), addUserValidationRules(), validate, addUser);
+app.put('/user/update/:id', csrfProtection, updateUser);
+app.delete('/user/delete/:id', csrfProtection, deleteUser);
 
 // Start the server
 app.listen(3000, () => {

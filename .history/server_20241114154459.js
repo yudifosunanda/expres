@@ -61,10 +61,6 @@ const validate = (req, res, next) => {
 };
 
 // Define a route to fetch data from the user table
-// Route to provide CSRF token to the client
-app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
 
 app.get('/home', (req, res)=>{
   let datas = [
@@ -95,7 +91,7 @@ app.get('/', (req, res)=>{
 });
 
   app.get('/users', getUser);
-  app.post('/user/add',csrfProtection, upload.single('profilePic'), addUserValidationRules(), validate, addUser);
+  app.post('/user/add', upload.single('profilePic'), addUserValidationRules(), validate, addUser);
   app.put('/user/update/:id', updateUser);
   app.delete('/user/delete/:id', deleteUser);
 

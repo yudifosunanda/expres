@@ -2,9 +2,8 @@
 const express = require('express');
 const db = require('./db');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-var csrf = require('csurf');
 const cors = require('cors');
+const csrf = require('csurf');
 // user model
 const { getUser, addUser, updateUser, deleteUser } = require('./rest/user');
 //validator
@@ -14,16 +13,18 @@ const { validationResult } = require('express-validator');
 const multer = require('multer');
 const path = require('path');
 
+
 // Initialize Express app
 const app = express();
+
+// Initialize the CSRF middleware
+const csrfProtection = csrf({ cookie: true });
 
 // Configure middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(cookieParser('secretKey'));
-var csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -95,7 +96,7 @@ app.get('/', (req, res)=>{
 });
 
   app.get('/users', getUser);
-  app.post('/user/add',csrfProtection, upload.single('profilePic'), addUserValidationRules(), validate, addUser);
+  app.post('/user/add',csrfProtection,  upload.single('profilePic'), addUserValidationRules(), validate, addUser);
   app.put('/user/update/:id', updateUser);
   app.delete('/user/delete/:id', deleteUser);
 
