@@ -24,7 +24,8 @@ app.use(cors());
 app.use(cookieParser('secretKey'));
 var csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
-app.use('/uploads', express.static('uploads'));
+app.use(express.static('uploads'))
+app.use('/upload', express.static('public'))
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
